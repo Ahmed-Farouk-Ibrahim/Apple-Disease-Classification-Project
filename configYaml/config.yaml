@@ -1,0 +1,10 @@
+# Root directory for all artifacts
+artifacts_root: artifacts
+
+# Configuration for data ingestion process
+data_ingestion:
+  root_dir: artifacts/data_ingestion # Directory to store the data ingestion artifacts
+  source_URL: https://drive.google.com/file/d/10vW7LivNBhdVmNtQCsmmpNu6RYBw53RM/view?usp=sharing # URL to download the dataset
+  local_data_file: artifacts/data_ingestion/data.zip # Local path to save the downloaded dataset
+  unzip_dir: artifacts/data_ingestion # Directory to unzip the dataset
+
