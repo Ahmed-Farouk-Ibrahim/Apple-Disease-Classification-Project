@@ -1,7 +1,7 @@
 import os
 from src.cnnClassifier.constants import *
 from src.cnnClassifier.utils.common import read_yaml, create_directories
-from src.cnnClassifier.entity.config_entity import DataIngestionConfig
+from src.cnnClassifier.entity.config_entity import (DataIngestionConfig, PrepareModelConfig, )
 
 class ConfigurationManager:
     """
@@ -43,3 +43,28 @@ class ConfigurationManager:
 
         return data_ingestion_config
 
+    def get_prepare_model_config(self) -> PrepareModelConfig:
+        """
+        Retrieve the configuration for preparing the model.
+
+        Returns:
+            PrepareModelConfig: An object containing the configuration settings for preparing the model.
+        """
+        # Extract the model preparation configuration from the loaded config
+        config = self.config.model_preparation
+
+        # Create directories specified in the model configuration
+        create_directories([config.root_dir])
+
+        # Instantiate and return the PrepareModelConfig object with the necessary settings
+        prepare_model_config = PrepareModelConfig(
+            root_dir=Path(config.root_dir),
+            built_model_path=Path(config.built_model_path),
+            params_image_size=self.params.IMAGE_SIZE,
+            params_n_classes=self.params.N_CLASSES,
+            params_learning_rate=self.params.LEARNING_RATE,
+            params_rho= self.params.RHO,
+            params_epsilon= self.params.EPSILON,
+        )
+
+        return prepare_model_config
