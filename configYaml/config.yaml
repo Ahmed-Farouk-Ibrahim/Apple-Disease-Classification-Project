@@ -8,3 +8,7 @@ data_ingestion:
   local_data_file: artifacts/data_ingestion/data.zip # Local path to save the downloaded dataset
   unzip_dir: artifacts/data_ingestion # Directory to unzip the dataset
 
+model_preparation:
+  root_dir: artifacts/prepare_built_model # Directory to store built model preparation artifacts
+  built_model_path: artifacts/prepare_built_model/built_model.h5 # Path to save the built model
+
