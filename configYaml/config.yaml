@@ -8,7 +8,12 @@ data_ingestion:
   local_data_file: artifacts/data_ingestion/data.zip # Local path to save the downloaded dataset
   unzip_dir: artifacts/data_ingestion # Directory to unzip the dataset
 
+# Configuration for Model Preparatoin Stage
 model_preparation:
-  root_dir: artifacts/prepare_built_model # Directory to store built model preparation artifacts
-  built_model_path: artifacts/prepare_built_model/built_model.h5 # Path to save the built model
+  root_dir: artifacts/model_preparation # Directory to store built model preparation artifacts
+  built_model_path: artifacts/model_preparation/built_model.h5 # Path to save the built model
 
+# Configuration for Model Training Stage
+training:
+  root_dir: artifacts/training # Directory to store training artifacts
+  trained_model_path: artifacts/training/model.h5 # Path to save the trained model
