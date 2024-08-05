@@ -91,11 +91,11 @@ class PrepareModel:
 
         # Prepare the full model with custom layers and specified parameters
         self.full_model = self.prepare_model(
-            input_shape = self.config.params_image_size, 
-            n_classes = self.config.params_n_classes, 
-            learning_rate = self.config.params_learning_rate, 
-            rho = self.config.params_rho, 
-            epsilon = self.config.params_epsilon,
+            input_shape = self.config.all_params.IMAGE_SIZE, 
+            n_classes = self.config.all_params.N_CLASSES, 
+            learning_rate = self.config.all_params.LEARNING_RATE, 
+            rho = self.config.all_params.RHO, 
+            epsilon = self.config.all_params.EPSILON,
         )
 
         # Save the updated full model to the specified path

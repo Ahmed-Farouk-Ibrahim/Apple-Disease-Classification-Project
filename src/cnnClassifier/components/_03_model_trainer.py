@@ -1,8 +1,10 @@
+from collections import Counter
 import tensorflow as tf
 from pathlib import Path
 from cnnClassifier.entity.config_entity import TrainingConfig
 from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
+from keras.optimizers import RMSprop 
 from sklearn.utils import class_weight
 import numpy as np
 
@@ -36,8 +38,8 @@ class TrainModel:
         
         self.train_generator = train_datagen.flow_from_directory(
             f'{self.config.training_data}/train',
-            target_size=self.config.params_image_size[:-1],
-            batch_size=self.config.params_batch_size,
+            target_size=self.config.all_params.IMAGE_SIZE[:-1],
+            batch_size=self.config.all_params.BATCH_SIZE,
             class_mode='sparse',
             shuffle=True
         )
@@ -47,8 +49,8 @@ class TrainModel:
             
         self.validation_generator = validation_datagen.flow_from_directory(
             f'{self.config.training_data}/val',
-            target_size=self.config.params_image_size[:-1],
-            batch_size=self.config.params_batch_size,
+            target_size=self.config.all_params.IMAGE_SIZE[:-1],
+            batch_size=self.config.all_params.BATCH_SIZE,
             class_mode='sparse',
             shuffle=False
         )
@@ -72,13 +74,26 @@ class TrainModel:
         Train the model using the loaded data and specified parameters.
         Save the trained model to the specified path.
         """
+
+        # Compile the model
+        optimizer = RMSprop(
+            learning_rate=self.config.all_params.LEARNING_RATE,
+            rho=self.config.all_params.RHO,
+            epsilon=self.config.all_params.EPSILON
+        )
+        self.model.compile(
+            optimizer=optimizer, 
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(), 
+            metrics=["accuracy"]
+        )
+    
         # Define the learning rate annealer
         reduce_lr = ReduceLROnPlateau(
             monitor='val_loss',
-            patience=self.config.params_patience,
-            verbose=self.config.params_verbose,
-            factor=self.config.params_factor,
-            min_lr=self.config.params_min_lr
+            patience=self.config.all_params.PATIENCE,
+            verbose=self.config.all_params.VERPOSE,
+            factor=self.config.all_params.FACTOR,
+            min_lr=self.config.all_params.MIN_LR
         )
 
         # Calculate steps per epoch and validation steps
@@ -88,7 +103,7 @@ class TrainModel:
         # Train the model
         history = self.model.fit(
             self.train_generator,
-            epochs=self.config.params_epochs,
+            epochs=self.config.all_params.EPOCHS,
             validation_data=self.validation_generator,
             steps_per_epoch=steps_per_epoch,
             validation_steps=validation_steps,
@@ -96,16 +111,12 @@ class TrainModel:
             class_weight=self.class_weights
         )
 
-        # Save the trained model to the specified path
-        self.save_model(path=self.config.trained_model_path, model=self.model)
+        # Save the trained model architecture to JSON
+        model_json = self.model.to_json()
+        
+        with open(self.config.trained_model_path.with_suffix(".json"), "w") as json_file:
+            json_file.write(model_json)
 
-    @staticmethod
-    def save_model(path: Path, model: tf.keras.Model):
-        """
-        Save the given model to the specified path.
-
-        Args:
-            path (Path): Path to save the model.
-            model (tf.keras.Model): The model to be saved.
-        """
-        model.save(path)
+        # Save model weights separately using the save_weights method. 
+        # This ensures compatibility across different versions of TensorFlow/Keras.
+        self.model.save_weights(self.config.trained_model_path.with_suffix(".h5"))
