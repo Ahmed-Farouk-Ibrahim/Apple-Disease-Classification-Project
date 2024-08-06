@@ -6,8 +6,6 @@ from cnnClassifier.logging import logger
 
 STAGE_NAME = "Model Training"
 
-
-
 class Model_Training_Pipeline:
     def __init__(self):
         pass
@@ -28,6 +26,7 @@ class Model_Training_Pipeline:
         # Prepare the training and validation data generators
         training.data_generator()
 
+        # Calculate class weights to handle class imbalance.
         training.calculate_class_weights()
         
         # Train the model

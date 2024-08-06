@@ -1,7 +1,7 @@
 import os
 from src.cnnClassifier.constants import *
 from src.cnnClassifier.utils.common import read_yaml, create_directories
-from src.cnnClassifier.entity.config_entity import (DataIngestionConfig, PrepareModelConfig, TrainingConfig, )
+from src.cnnClassifier.entity.config_entity import (DataIngestionConfig, PrepareModelConfig, TrainingConfig, EvaluationConfig)
 
 class ConfigurationManager:
     """
@@ -40,7 +40,6 @@ class ConfigurationManager:
             local_data_file=config_di.local_data_file,
             unzip_dir=config_di.unzip_dir
         )
-
         return data_ingestion_config
 
     def get_prepare_model_config(self) -> PrepareModelConfig:
@@ -60,13 +59,8 @@ class ConfigurationManager:
         prepare_model_config = PrepareModelConfig(
             root_dir=Path(config.root_dir),
             built_model_path=Path(config.built_model_path),
-            params_image_size=self.params.IMAGE_SIZE,
-            params_n_classes=self.params.N_CLASSES,
-            params_learning_rate=self.params.LEARNING_RATE,
-            params_rho= self.params.RHO,
-            params_epsilon= self.params.EPSILON,
+            all_params=self.params, 
         )
-
         return prepare_model_config
     
 
@@ -79,7 +73,6 @@ class ConfigurationManager:
         """
         training = self.config.training
         model_preparation = self.config.model_preparation
-        params = self.params
         training_data = os.path.join(self.config.data_ingestion.unzip_dir, "dataset")
         create_directories([Path(training.root_dir)])
 
@@ -88,15 +81,23 @@ class ConfigurationManager:
             built_model_path=Path(model_preparation.built_model_path),
             trained_model_path=Path(training.trained_model_path),
             training_data=Path(training_data),
-            params_epochs=int(params.EPOCHS),
-            params_batch_size=int(params.BATCH_SIZE),
-            params_image_size=list(map(int, params.IMAGE_SIZE)),
-            params_patience=int(params.PATIENCE),
-            params_factor=float(params.FACTOR),
-            params_min_lr=float(params.MIN_LR),
-            params_verbose=int(params.VERPOSE)
+            all_params=self.params, 
         )
-
         return training_config
     
+    
+    def get_evaluation_config(self) -> EvaluationConfig:
+        training = self.config.training
+        training_data = os.path.join(self.config.data_ingestion.unzip_dir, "dataset")
+        create_directories([ Path(training.root_dir) ])
+
+
+        eval_config = EvaluationConfig(
+            root_dir=Path(training.root_dir),            
+            trained_model_json_path=Path(training.trained_model_path).with_suffix(".json"), # = "artifacts/training/model.json"
+            trained_model_weights_path=Path(training.trained_model_path).with_suffix(".h5"),
+            training_data=Path(training_data),
+            all_params=self.params,         
+        )
+        return eval_config
     

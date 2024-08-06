@@ -15,11 +15,7 @@ class DataIngestionConfig:
 class PrepareModelConfig:
     root_dir: Path
     built_model_path: Path    
-    params_image_size: list
-    params_n_classes: int
-    params_learning_rate: float
-    params_rho: float
-    params_epsilon: float
+    all_params: dict
 
 
 # Data class for model training configuration.
@@ -29,13 +25,14 @@ class TrainingConfig:
     built_model_path: Path
     trained_model_path: Path    
     training_data: Path
-    params_epochs: int
-    params_batch_size: int
-    params_image_size: list
-    params_patience: int
-    params_factor: float
-    params_min_lr: float
-    params_verbose: int
+    all_params: dict
 
 
-    
+@dataclass(frozen=True)
+class EvaluationConfig:
+    root_dir: Path
+    trained_model_json_path: Path
+    trained_model_weights_path: Path
+    training_data: Path
+    all_params: dict
+        
