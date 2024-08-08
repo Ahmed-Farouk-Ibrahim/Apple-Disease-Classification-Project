@@ -1,12 +1,23 @@
-# Configuration for model parameters
+# Configuration for model parameters:
   IMAGE_SIZE: [256, 256, 3]   # Ensure this matches the input shape/or/Image size of your model
   N_CLASSES: 4                # Number of output classes
   BATCH_SIZE: 16              # Number of samples per gradient update
   EPOCHS: 60                  # Number of epochs to train the model
+  
+  # RMSprop Optimizer Parameters: 
   LEARNING_RATE: 0.001        # Learning rate for the optimizer
   RHO: 0.9                    # Optimizer rho
   EPSILON: 0.00000001         # Optimizer Epsilon
-  PATIENCE: 3                 # Learning Rate Annealer/Reduction (ReduceLROnPlateau) Parameter
-  FACTOR: 0.5                 # ReduceLROnPlateau Parameter
-  MIN_LR: 0.00001             # ReduceLROnPlateau Parameter
-  VERPOSE: 1                  # ReduceLROnPlateau Parameter
+
+  # Learning Rate Annealer/Reduction (ReduceLROnPlateau) Parameters:
+  REDUCE_LR_PATIENCE: 5     
+  REDUCE_LR_MONITOR: 'val_loss'
+  REDUCE_LR_FACTOR: 0.5                 
+  REDUCE_LR_MIN_LR: 0.00001             
+  REDUCE_LR_VERPOSE: 1                  
+
+  # Early Stopping Parameters:
+  EARLY_STOPPING_PATIENCE: 10
+  EARLY_STOPPING_MONITOR: 'val_loss'
+  EARLY_STOPPING_MODE: 'min'
+  RESTORE_BEST_WEIGHTS: True

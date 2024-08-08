@@ -2,9 +2,9 @@ import os
 import zipfile
 # import gdown package to download from google drive
 import gdown
-from src.cnnClassifier.logging import logger
-from src.cnnClassifier.utils.common import get_size
-from src.cnnClassifier.entity.config_entity import DataIngestionConfig
+from cnnClassifier.logging import logger
+from cnnClassifier.utils.common import get_size
+from cnnClassifier.entity.config_entity import DataIngestionConfig
 
 class DataIngestion:
     """

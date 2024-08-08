@@ -2,7 +2,7 @@ from collections import Counter
 import tensorflow as tf
 from pathlib import Path
 from cnnClassifier.entity.config_entity import TrainingConfig
-from keras.callbacks import ReduceLROnPlateau
+from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import RMSprop 
 from sklearn.utils import class_weight
@@ -89,11 +89,19 @@ class TrainModel:
     
         # Define the learning rate annealer
         reduce_lr = ReduceLROnPlateau(
-            monitor='val_loss',
-            patience=self.config.all_params.PATIENCE,
-            verbose=self.config.all_params.VERPOSE,
-            factor=self.config.all_params.FACTOR,
-            min_lr=self.config.all_params.MIN_LR
+            monitor=self.config.all_params.REDUCE_LR_MONITOR,
+            patience=self.config.all_params.REDUCE_LR_PATIENCE,
+            verbose=self.config.all_params.REDUCE_LR_VERPOSE,
+            factor=self.config.all_params.REDUCE_LR_FACTOR,
+            min_lr=self.config.all_params.REDUCE_LR_MIN_LR
+        )
+
+        # Define Early Stopping
+        early_stop = EarlyStopping(
+            monitor=self.config.all_params.EARLY_STOPPING_MONITOR,
+            patience=self.config.all_params.EARLY_STOPPING_PATIENCE,
+            mode=self.config.all_params.EARLY_STOPPING_MODE,
+            restore_best_weights=self.config.all_params.RESTORE_BEST_WEIGHTS
         )
 
         # Calculate steps per epoch and validation steps
@@ -107,7 +115,7 @@ class TrainModel:
             validation_data=self.validation_generator,
             steps_per_epoch=steps_per_epoch,
             validation_steps=validation_steps,
-            callbacks=[reduce_lr],
+            callbacks=[reduce_lr, early_stop],
             class_weight=self.class_weights
         )
 
