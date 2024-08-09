@@ -119,6 +119,12 @@ class TrainModel:
             class_weight=self.class_weights
         )
 
+        '''
+        I tried using the traditional way: modlel.save(path), but I got "Deserializing Error", so I had to save the model with another way: 
+        If aligning versions is not feasible, you can modify the model saving and loading code to handle the deserialization issue.        
+        When saving the model, use the save_weights method and save the model architecture separately. 
+        This ensures compatibility across different versions of TensorFlow/Keras.
+        '''
         # Save the trained model architecture to JSON
         model_json = self.model.to_json()
         
