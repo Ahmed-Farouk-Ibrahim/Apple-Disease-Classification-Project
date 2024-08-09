@@ -17,12 +17,12 @@ class PredictionPipeline:
         Returns: str: A string containing the prediction result.
         """
         # Load the model architecture from JSON
-        with open(os.path.join("artifacts", "training", "model.json"), "r") as json_file:
+        with open(os.path.join("model", "model.json"), "r") as json_file:
             model_json = json_file.read()
             model = model_from_json(model_json)
 
         # Load the model weights
-        model.load_weights(os.path.join("artifacts", "training", "model.h5"))
+        model.load_weights(os.path.join("model", "model.h5"))
 
         # Load and preprocess the image
         imagename = self.filename
