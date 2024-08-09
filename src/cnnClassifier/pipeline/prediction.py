@@ -1,6 +1,6 @@
 import numpy as np
-from keras.models import load_model
-from keras.preprocessing import image
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras.preprocessing import image
 import os
 
 class PredictionPipeline:
@@ -14,22 +14,24 @@ class PredictionPipeline:
         """
         Predict the class of the image using the pre-trained model.
 
-        Returns:   list: A list containing a dictionary with the prediction result.
+        Returns: str: A string containing the prediction result.
         """
-        # Load the trained model from the specified path
-        model = load_model(os.path.join("artifacts", "training", "model.h5"))
+        # Load the model architecture from JSON
+        with open(os.path.join("artifacts", "training", "model.json"), "r") as json_file:
+            model_json = json_file.read()
+            model = model_from_json(model_json)
+
+        # Load the model weights
+        model.load_weights(os.path.join("artifacts", "training", "model.h5"))
 
         # Load and preprocess the image
         imagename = self.filename
-        # Resize the image to 256*256 pixels
         test_image = image.load_img(imagename, target_size=(256, 256))
-        # Convert the image to an array  
-        test_image = image.img_to_array(test_image)  
-        # Add an extra dimension to match the model's input shape
-        test_image = np.expand_dims(test_image, axis=0)  
+        test_image = image.img_to_array(test_image)
+        test_image = np.expand_dims(test_image, axis=0)
 
-        # Predict the class of the image using the model. Get the class with the highest probability
-        result = np.argmax(model.predict(test_image), axis=1)  
+        # Predict the class of the image using the model
+        result = np.argmax(model.predict(test_image), axis=1)
 
         # Map the prediction result to the corresponding class label
         class_labels = {
@@ -40,4 +42,17 @@ class PredictionPipeline:
         }
 
         prediction = class_labels.get(result[0], "Unknown")
-        return [{"image": prediction}]
+
+        # Mapping from model output to desired output
+        label_mapping = {
+            "Apple___Apple_scab": "Apple Scab",
+            "Apple___Black_rot": "Black Rot",
+            "Apple___Cedar_apple_rust": "Apple Rust",
+            "Apple___healthy": "Healthy"
+        }
+
+        # Get the human-readable label
+        human_readable_label = label_mapping.get(prediction, "Unknown")
+
+        # Return the human-readable label
+        return [human_readable_label]
